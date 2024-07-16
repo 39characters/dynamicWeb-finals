@@ -40,10 +40,10 @@ const BrowseTemplates = ({ navigateBack }) => {
     try {
       const updatedTemplates = [...templates];
       const templateIndex = updatedTemplates.findIndex((template) => template.id === templateId);
-  
+    
       if (templateIndex !== -1 && workoutIndex !== null && workoutIndex < updatedTemplates[templateIndex].workouts.length) {
         const workoutToRemove = updatedTemplates[templateIndex].workouts[workoutIndex];
-  
+    
         // Prompt the user with a confirmation dialog
         const result = await Swal.fire({
           title: 'Confirm',
@@ -53,15 +53,16 @@ const BrowseTemplates = ({ navigateBack }) => {
           confirmButtonText: 'Yes, remove it',
           cancelButtonText: 'Cancel'
         });
-  
+    
         if (result.isConfirmed) {
           if (updatedTemplates[templateIndex].workouts.length > 1) {
             // Remove workout from the local state
             updatedTemplates[templateIndex].workouts.splice(workoutIndex, 1);
             setTemplates(updatedTemplates);
-  
+    
             // Remove workout from the database
             const workoutIdToDelete = workoutToRemove.id;
+            console.log(`Deleting workout with ID: ${workoutIdToDelete}`);
             await axios.delete(`http://localhost:8080/api/workouts/${workoutIdToDelete}`);
             
             // Show success message after successful deletion
@@ -75,9 +76,10 @@ const BrowseTemplates = ({ navigateBack }) => {
       }
     } catch (error) {
       console.error('Error removing workout:', error);
-      // Instead of displaying an error message here, you can handle it gracefully or log it.
+      Swal.fire('Error', 'Failed to remove workout', 'error');
     }
   };
+  
   
   
 
